@@ -1,3 +1,4 @@
+using ASPNetCore.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -43,6 +44,9 @@ namespace MvcStartApp
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            // Подключаем логирование с использованием ПО промежуточного слоя
+            app.UseMiddleware<LoggingMiddleware>();
 
             app.UseAuthorization();
 
