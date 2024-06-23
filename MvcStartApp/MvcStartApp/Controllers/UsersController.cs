@@ -34,10 +34,20 @@ namespace MvcStartApp.Controllers
             return View(authors);
         }
 
-        public IActionResult Privacy()
+        [HttpGet]
+        public async Task<IActionResult> Register()
         {
+
             return View();
         }
+
+        [HttpPost]
+        public async Task<string> Register(User user)
+        {
+            await _repo.AddUser(user);
+            return "Suссes register";
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
