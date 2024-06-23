@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using MvcStartApp.Repository;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,14 +14,16 @@ namespace ASPNetCore.Middleware
     {
         private readonly RequestDelegate _next;
         private readonly IWebHostEnvironment _env;
+        private readonly IBlogRepository _blogRepository;
 
         /// <summary>
         /// конструктор, принимающий RequestDelegate
         /// </summary>
-        public LoggingMiddleware(RequestDelegate next, IWebHostEnvironment env)
+        public LoggingMiddleware(RequestDelegate next, IWebHostEnvironment env, IBlogRepository repo)
         {
             _next = next;
             _env = env;
+            _blogRepository = repo;
         }
 
         /// <summary>
