@@ -42,10 +42,11 @@ namespace MvcStartApp.Controllers
         }
 
         [HttpPost]
-        public async Task<string> Register(User user)
+        public async Task<IActionResult> Register(User user)
         {
             await _repo.AddUser(user);
-            return "Suссes register";
+            return View(user);
+
         }
 
 
