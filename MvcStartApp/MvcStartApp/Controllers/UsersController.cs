@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace MvcStartApp.Controllers
 {
-    public class HomeController : Controller
+    public class UsersController : Controller
     {
         private readonly IBlogRepository _repo;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger, IBlogRepository repo)
+        public UsersController(ILogger<HomeController> logger, IBlogRepository repo)
         {
             _logger = logger;
             _repo = repo;
@@ -24,8 +24,14 @@ namespace MvcStartApp.Controllers
 
         public async Task<IActionResult> Index()
         {
+            var authors = await _repo.GetUsers();
 
-            return View();
+            Console.WriteLine("See all blog authors:");
+            foreach (var author in authors)
+                Console.WriteLine($"Author with id {author.Id}, named {author.FirstName}, joined {author.JoinDate}");
+
+
+            return View(authors);
         }
 
         public IActionResult Privacy()
