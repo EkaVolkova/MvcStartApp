@@ -8,6 +8,7 @@ namespace MvcStartApp.Repository
     {
         Task AddRequest(Request request);
 
+        Task<Request[]> GetRequests();
 
     }
 

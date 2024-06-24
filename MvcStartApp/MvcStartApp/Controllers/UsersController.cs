@@ -14,9 +14,9 @@ namespace MvcStartApp.Controllers
     public class UsersController : Controller
     {
         private readonly IBlogRepository _repo;
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(ILogger<HomeController> logger, IBlogRepository repo)
+        public UsersController(ILogger<UsersController> logger, IBlogRepository repo)
         {
             _logger = logger;
             _repo = repo;
