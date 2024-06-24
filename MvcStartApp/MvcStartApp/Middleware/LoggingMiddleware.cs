@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using MvcStartApp.Models.Db;
 using MvcStartApp.Repository;
 using System;
 using System.Collections.Generic;
@@ -15,24 +16,26 @@ namespace ASPNetCore.Middleware
         private readonly RequestDelegate _next;
         private readonly IWebHostEnvironment _env;
         private readonly IBlogRepository _blogRepository;
+        private readonly IRequestRepository _requestRepository;
 
         /// <summary>
         /// конструктор, принимающий RequestDelegate
         /// </summary>
-        public LoggingMiddleware(RequestDelegate next, IWebHostEnvironment env, IBlogRepository repo)
+        public LoggingMiddleware(RequestDelegate next, IWebHostEnvironment env, IBlogRepository blogRepository, IRequestRepository requestRepository)
         {
             _next = next;
             _env = env;
-            _blogRepository = repo;
+            _blogRepository = blogRepository;
+            _requestRepository = requestRepository;
         }
 
         /// <summary>
         /// Функция логирования в консоль
         /// </summary>
-        private void LogConsole(HttpContext context)
+        private void LogConsole(Request request)
         {
             // Для логирования данных о запросе используем свойста объекта HttpContext
-            string logMessage = $"[{DateTime.Now}]: New request to http://{context.Request.Host.Value + context.Request.Path}";
+            string logMessage = $"[{request.Date}]: New request to http://{request.Url}";
             Console.WriteLine(logMessage);
 
         }
@@ -40,10 +43,10 @@ namespace ASPNetCore.Middleware
         /// <summary>
         /// Функция логирования в файл
         /// </summary>
-        private async Task LogFile(HttpContext context)
+        private async Task LogFile(Request request)
         {
             // Для логирования данных о запросе используем свойста объекта HttpContext
-            string logMessage = $"[{DateTime.Now}]: New request to http://{context.Request.Host.Value + context.Request.Path}\r\n";
+            string logMessage = $"[{request.Date}]: New request to http://{request.Url}\r\n";
             string logDir = Directory.GetCurrentDirectory() + "\\Logs";
             if (!Directory.Exists(logDir))
                 Directory.CreateDirectory(logDir);
@@ -53,15 +56,31 @@ namespace ASPNetCore.Middleware
         }
 
         /// <summary>
+        /// Функция логирования в БД
+        /// </summary>
+        private async Task LogDb(Request request)
+        {
+
+            await _requestRepository.AddRequest(request);
+        }
+
+        /// <summary>
         /// Задача логирования
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
         public async Task InvokeAsync(HttpContext context)
         {
+            var request = new Request()
+            {
+                Id = new Guid(),
+                Date = DateTime.Now,
+                Url = $"http://{context.Request.Host.Value + context.Request.Path}"
+            };
 
-            LogConsole(context);
-            await LogFile(context);
+            LogConsole(request);
+            await LogFile(request);
+            await LogDb(request);
 
             // Передача запроса далее по конвейеру
             await _next.Invoke(context);
